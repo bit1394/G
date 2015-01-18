@@ -1,37 +1,77 @@
 package com.x1.game;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 public class x1 implements ApplicationListener {
 	
 	private Texture quadTex;
 	private SpriteBatch bat;
-	private TextureRegion redRegion, yelRegion, blueRegion, greenRegion;
+	private TextureRegion redRegion;
 	
+	private Stage stage;
+	
+	class RedQuad extends Actor{
+		@Override
+		public void draw (Batch batch, float parentAlpha){ //обязательно  Batch, а не SpriteBatch
+			batch.draw(redRegion, getX(), getY(), getWidth(), getHeight());
+		}
+	}
+	
+	class CoolRedQuads extends Actor{
+		public void draw (Batch batch, float parentAlpha){
+			batch.draw(redRegion, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+		}
+	}
+		
 	@Override
 	public void create () {
 	
 		quadTex = new Texture ("quads.png");
 		bat = new SpriteBatch ();
 		redRegion = new TextureRegion (quadTex, 32, 0, 64, 32);
-		blueRegion = new TextureRegion (quadTex, 0, 32, 32, 64);
-		yelRegion = new TextureRegion (quadTex, 1, 1, 31, 31);
-		greenRegion = new TextureRegion (quadTex, 31, 32, 64, 64);
 		
+		stage = new Stage (new StretchViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), bat);
+		
+	RedQuad redQ = new RedQuad();
+	redQ.setSize(100, 50);
+	redQ.setPosition(50, 50);
+	stage.addActor(redQ);
+	
+	initCoolRedQuads();
+	//initRedQuads();
 	}
+	
+private void initRedQuads(){
+	for (int i = 0; i < 6; i++){
+		RedQuad rQ = new RedQuad ();
+		rQ.setSize(i*10,  i*5);
+		rQ.setPosition(i*50,  200);
+		stage.addActor(rQ);
+	}
+}
+
+private void initCoolRedQuads(){
+	CoolRedQuads coolQ = new CoolRedQuads();
+	coolQ.setSize(100,100);
+	coolQ.setPosition(200,200);
+	coolQ.setOrigin(50,50);
+	coolQ.setRotation(75);
+	
+	stage.addActor(coolQ);
+}
 
 	@Override
 	public void render () {
-		bat.begin();
-		bat.draw(quadTex, 100, 100);
-		bat.draw(redRegion, 20, 20, 50, 50);
-		bat.draw(blueRegion, 25, 25, 100, 10);
-		bat.draw(yelRegion, 20, 350);
-		bat.draw(greenRegion, 250, 120, 10, 10);
-		bat.end();
+		stage.draw();
+		stage.act(Gdx.graphics.getDeltaTime());
 	}
 		
 
